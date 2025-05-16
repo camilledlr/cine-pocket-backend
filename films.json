@@ -1,0 +1,87 @@
+[
+  {
+    "title": "Inception",
+    "status": "watched",
+    "shortReview": "Un thriller c\u00e9r\u00e9bral",
+    "longReview": "Une vraie claque visuelle et narrative sign\u00e9e Nolan.",
+    "liked": true,
+    "rating": 9,
+    "recommendations": [
+      "Interstellar",
+      "Tenet"
+    ],
+    "origin": "USA",
+    "platform": [
+      "Netflix"
+    ],
+    "actors": [
+      "Leonardo DiCaprio",
+      "Joseph Gordon-Levitt",
+      "Elliot Page"
+    ],
+    "director": "Christopher Nolan",
+    "hyped": false,
+    "watchedDate": "2024-04-10T00:00:00.000Z",
+    "tags": [
+      "sci-fi",
+      "thriller"
+    ]
+  },
+  {
+    "title": "Parasite",
+    "status": "watched",
+    "shortReview": "Sombre et brillant",
+    "longReview": "Une critique sociale tendue et pleine de surprises.",
+    "liked": true,
+    "rating": 10,
+    "recommendations": [
+      "Memories of Murder",
+      "Snowpiercer"
+    ],
+    "origin": "South Korea",
+    "platform": [
+      "Amazon Prime"
+    ],
+    "actors": [
+      "Song Kang-ho",
+      "Choi Woo-shik",
+      "Park So-dam"
+    ],
+    "director": "Bong Joon-ho",
+    "hyped": false,
+    "watchedDate": "2024-03-22T00:00:00.000Z",
+    "tags": [
+      "drama",
+      "thriller"
+    ]
+  },
+  {
+    "title": "Dune",
+    "status": "to watch",
+    "shortReview": "",
+    "longReview": "",
+    "liked": null,
+    "rating": null,
+    "recommendations": [
+      "Blade Runner 2049",
+      "The Matrix"
+    ],
+    "origin": "USA",
+    "platform": [
+      "HBO Max",
+      "Canal+"
+    ],
+    "actors": [
+      "Timoth\u00e9e Chalamet",
+      "Zendaya",
+      "Oscar Isaac"
+    ],
+    "director": "Denis Villeneuve",
+    "hyped": true,
+    "watchedDate": null,
+    "tags": [
+      "sci-fi",
+      "epic"
+    ]
+  }
+]

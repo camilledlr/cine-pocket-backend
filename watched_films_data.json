@@ -1,0 +1,85 @@
+[
+  {
+    "title": "The Shawshank Redemption",
+    "status": "watched",
+    "shortReview": "Chef-d'\u0153uvre intemporel",
+    "longReview": "Une histoire puissante sur l'espoir et la r\u00e9demption.",
+    "liked": true,
+    "rating": 10,
+    "recommendations": [
+      "The Green Mile",
+      "Forrest Gump"
+    ],
+    "origin": "USA",
+    "platform": [
+      "Netflix"
+    ],
+    "actors": [
+      "Tim Robbins",
+      "Morgan Freeman"
+    ],
+    "director": "Frank Darabont",
+    "hyped": false,
+    "watchedDate": "2023-10-15T00:00:00.000Z",
+    "tags": [
+      "drama",
+      "prison"
+    ]
+  },
+  {
+    "title": "Whiplash",
+    "status": "watched",
+    "shortReview": "Intense et captivant",
+    "longReview": "Un film nerveux sur l'excellence et la folie de la performance.",
+    "liked": true,
+    "rating": 9,
+    "recommendations": [
+      "Black Swan",
+      "Amadeus"
+    ],
+    "origin": "USA",
+    "platform": [
+      "Amazon Prime"
+    ],
+    "actors": [
+      "Miles Teller",
+      "J.K. Simmons"
+    ],
+    "director": "Damien Chazelle",
+    "hyped": false,
+    "watchedDate": "2023-12-02T00:00:00.000Z",
+    "tags": [
+      "drama",
+      "music"
+    ]
+  },
+  {
+    "title": "The Dark Knight",
+    "status": "watched",
+    "shortReview": "Un chef-d\u2019\u0153uvre du genre",
+    "longReview": "Un film de super-h\u00e9ros intelligent, intense et m\u00e9morable.",
+    "liked": true,
+    "rating": 9,
+    "recommendations": [
+      "Batman Begins",
+      "Joker"
+    ],
+    "origin": "USA",
+    "platform": [
+      "HBO Max"
+    ],
+    "actors": [
+      "Christian Bale",
+      "Heath Ledger",
+      "Aaron Eckhart"
+    ],
+    "director": "Christopher Nolan",
+    "hyped": false,
+    "watchedDate": "2024-01-10T00:00:00.000Z",
+    "tags": [
+      "action",
+      "superhero",
+      "thriller"
+    ]
+  }
+]
