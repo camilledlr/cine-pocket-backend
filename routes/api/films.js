@@ -87,7 +87,7 @@ router.put('/add-to-watchlist', async (req, res) => {
 
     // 3. Ajout à la watchlist
     let watchlist = await List.findOne({ listType: 'WatchList' });
-
+console.log("old watchlist", watchlist);
     if (!watchlist) {
       watchlist = new List({
         title: 'Ma Watchlist',
