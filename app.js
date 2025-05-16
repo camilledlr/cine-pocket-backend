@@ -2,6 +2,11 @@ console.log('🌐 NODE_ENV:', process.env.NODE_ENV);
 console.log('📦 MONGODB_URI:', process.env.MONGODB_URI);
 var express = require('express');
 const cors = require('cors');
+
+app.use(cors({
+  origin: 'https://cine-pocket-frontend.vercel.app', // ton domaine Vercel en production
+  credentials: true // si tu utilises des cookies ou headers auth
+}));
 const connectDB = require('./config/db');
 connectDB(); // Connecte MongoDB au lancement
 var path = require('path');
