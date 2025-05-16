@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
-
+require('dotenv').config();
+const mongoUri = process.env.MONGODB_URI;
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost:27017/cine-pocket', {
+    await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
