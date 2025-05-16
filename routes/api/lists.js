@@ -82,13 +82,13 @@ router.put('/add-to-watchlist', async (req, res) => {
   
     try {
       // Chercher la liste de type "Watchlist"
-      let watchlist = await List.findOne({ listType: 'Watchlist' });
+      let watchlist = await List.findOne({ listType: 'WatchList' });
   
       // Si elle n’existe pas, on la crée
       if (!watchlist) {
         watchlist = new List({
           title: 'Ma Watchlist',
-          listType: 'Watchlist',
+          listType: 'WatchList',
           films: [],
         });
       }
