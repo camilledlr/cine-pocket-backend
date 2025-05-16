@@ -32,7 +32,7 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/watchlist', async (req, res) => {
   try {
-    const list = await List.findOne({ listType: 'WatchList' }).populate('films'); 
+    const list = await List.findOne({ listType: 'Watchlist' }).populate('films'); 
 
     if (!list) {
       return res.status(404).json({ error: 'Liste non trouvée' });
@@ -82,13 +82,13 @@ router.put('/add-to-watchlist', async (req, res) => {
   
     try {
       // Chercher la liste de type "Watchlist"
-      let watchlist = await List.findOne({ listType: 'WatchList' });
+      let watchlist = await List.findOne({ listType: 'Watchlist' });
   
       // Si elle n’existe pas, on la crée
       if (!watchlist) {
         watchlist = new List({
           title: 'Ma Watchlist',
-          listType: 'WatchList',
+          listType: 'Watchlist',
           films: [],
         });
       }

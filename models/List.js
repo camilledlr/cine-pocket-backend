@@ -7,7 +7,7 @@ const listSchema = new mongoose.Schema({
   },
   listType: {
     type: String,
-    enum: ['WatchList', 'LikedList','SeenList', 'Customised'],
+    enum: ['Watchlist', 'LikedList','SeenList', 'Customised'],
     default: 'Customised',
   },
   description: {

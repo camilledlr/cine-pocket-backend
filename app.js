@@ -3,10 +3,7 @@ console.log('📦 MONGODB_URI:', process.env.MONGODB_URI);
 var express = require('express');
 const cors = require('cors');
 
-app.use(cors({
-  origin: 'https://cine-pocket-frontend.vercel.app', // ton domaine Vercel en production
-  credentials: true // si tu utilises des cookies ou headers auth
-}));
+
 const connectDB = require('./config/db');
 connectDB(); // Connecte MongoDB au lancement
 var path = require('path');
@@ -18,6 +15,10 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+app.use(cors({
+  origin: 'https://cine-pocket-frontend.vercel.app', // ton domaine Vercel en production
+  credentials: true // si tu utilises des cookies ou headers auth
+}));
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());

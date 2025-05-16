@@ -86,12 +86,12 @@ router.put('/add-to-watchlist', async (req, res) => {
     }
 
     // 3. Ajout à la watchlist
-    let watchlist = await List.findOne({ listType: 'WatchList' });
+    let watchlist = await List.findOne({ listType: 'Watchlist' });
 console.log("old watchlist", watchlist);
     if (!watchlist) {
       watchlist = new List({
         title: 'Ma Watchlist',
-        listType: 'WatchList',
+        listType: 'Watchlist',
         films: [],
       });
     }
@@ -273,7 +273,7 @@ router.put('/mark-as-watched/:filmId', async (req, res) => {
     }
 
     // 1. Retirer de la Watchlist
-    const watchlist = await List.findOne({ listType: 'WatchList' });
+    const watchlist = await List.findOne({ listType: 'Watchlist' });
     if (watchlist && watchlist.films.includes(film._id)) {
       watchlist.films = watchlist.films.filter(id => id.toString() !== film._id.toString());
       await watchlist.save();
