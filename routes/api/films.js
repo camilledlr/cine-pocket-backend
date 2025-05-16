@@ -91,7 +91,7 @@ router.put('/add-to-watchlist', async (req, res) => {
     if (!watchlist) {
       watchlist = new List({
         title: 'Ma Watchlist',
-        listType: 'Watchlist',
+        listType: 'WatchList',
         films: [],
       });
     }
