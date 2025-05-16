@@ -21,7 +21,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true // uniquement si tu envoies des cookies / headers auth
 }));
-app.use(cors());
+app.options('*', cors()); // <== très important pour les requêtes preflight
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
