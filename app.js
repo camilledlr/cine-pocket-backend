@@ -16,8 +16,10 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 app.use(cors({
-  origin: 'https://cine-pocket-frontend.vercel.app', // ton domaine Vercel en production
-  credentials: true // si tu utilises des cookies ou headers auth
+  origin: ['https://cine-pocket-frontend.vercel.app'], // ou '*' temporairement
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // uniquement si tu envoies des cookies / headers auth
 }));
 app.use(cors());
 app.use(logger('dev'));
