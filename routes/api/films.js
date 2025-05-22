@@ -87,7 +87,6 @@ router.put('/add-to-watchlist', async (req, res) => {
 
     // 3. Ajout à la watchlist
     let watchlist = await List.findOne({ listType: 'Watchlist' });
-console.log("old watchlist", watchlist);
     if (!watchlist) {
       watchlist = new List({
         title: 'Ma Watchlist',
@@ -263,25 +262,42 @@ router.put('/:filmId/update-platforms', async (req, res) => {
   }
 });
 
-router.put('/mark-as-watched/:filmId', async (req, res) => {
-  const { filmId } = req.params;
+router.put('/mark-as-watched', async (req, res) => {
+  const { filmId, slug, title } = req.body;
 
   try {
-    const film = await Film.findById(filmId);
+    let film;
+
+    // 1. Récupération ou création du film
+    if (filmId) {
+      film = await Film.findById(filmId);
+    } else if (slug) {
+      film = await Film.findOne({ slug });
+      if (!film) {
+        if (!title) {
+          return res.status(400).json({ error: 'Le titre est requis pour créer un film.' });
+        }
+        film = new Film({ title, slug, status: 'watched' });
+        film.watchedDates = [new Date()];
+        await film.save();
+      }
+    } else {
+      return res.status(400).json({ error: 'Il faut fournir un identifiant de film (filmId ou slug).' });
+    }
+
     if (!film) {
       return res.status(404).json({ error: 'Film non trouvé.' });
     }
 
-    // 1. Retirer de la Watchlist
+    // 2. Retirer de la Watchlist
     const watchlist = await List.findOne({ listType: 'Watchlist' });
     if (watchlist && watchlist.films.includes(film._id)) {
       watchlist.films = watchlist.films.filter(id => id.toString() !== film._id.toString());
       await watchlist.save();
     }
 
-    // 2. Ajouter à la Seenlist
+    // 3. Ajouter à la Seenlist
     let seenlist = await List.findOne({ listType: 'SeenList' });
-    console.log("old seenlist", seenlist);
     if (!seenlist) {
       seenlist = new List({
         title: 'Mes films vus',
@@ -289,16 +305,14 @@ router.put('/mark-as-watched/:filmId', async (req, res) => {
         films: [],
       });
     }
+
     if (!seenlist.films.includes(film._id)) {
       seenlist.films.push(film._id);
       await seenlist.save();
-      console.log("new seenlist", seenlist);
     }
 
-    // 3. Modifier le statut du film
+    // 4. Modifier le statut et ajouter la date
     film.status = 'watched';
-
-    // 4. Ajouter la date du jour
     film.watchedDates = film.watchedDates || [];
     film.watchedDates.push(new Date());
 
@@ -309,12 +323,12 @@ router.put('/mark-as-watched/:filmId', async (req, res) => {
       film,
       timesWatched: film.watchedDates.length,
     });
+
   } catch (error) {
     console.error('❌ Erreur lors du marquage comme vu :', error.message);
     res.status(500).json({ error: 'Erreur serveur.' });
   }
 });
-
 // @route   PUT /api/films/:id/update-review
 // @desc    Ajouter ou modifier une shortReview, longReview et/ou un rating
 // @access  Public

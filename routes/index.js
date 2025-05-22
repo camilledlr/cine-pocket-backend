@@ -1,5 +1,3 @@
-console.log('🌐 NODE_ENV:', process.env.NODE_ENV);
-console.log('📦 MONGODB_URI:', process.env.MONGODB_URI);
 var express = require('express');
 var router = express.Router();
 
