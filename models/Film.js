@@ -46,9 +46,6 @@ const filmSchema = new mongoose.Schema({
   hyped: {
     type: Boolean,
   },
-  watchedDate: {
-    type: Date,
-  },
   watchedDates: {
   type: [Date],
   default: [],

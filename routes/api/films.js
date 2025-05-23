@@ -4,6 +4,18 @@ const Film = require('../../models/Film');
 const List = require('../../models/List');
 const slugify = require('slugify');
 
+// GET /api/films/all-titles
+router.get('/all-titles', async (req, res) => {
+  console.log("req body", req.body);
+  try {
+    const films = await Film.find({}, { _id: 1, title: 1, slug: 1, status :1 }).lean();
+    res.json(films);
+  } catch (err) {
+    console.error('❌ Erreur récupération des titres :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 
 // @route   POST /api/films
 // @desc    Ajouter un nouveau film
