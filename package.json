@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "import:filmstowatch": "node scripts/importFilmsWatchlist.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
