@@ -16,6 +16,29 @@ router.get('/all-titles', async (req, res) => {
   }
 });
 
+// GET /filters-data
+router.get('/filters-data', async (req, res) => {
+  try {
+    const directors = await Film.distinct("director", { director: { $ne: null } });
+    const origins = await Film.distinct("origin", { origin: { $ne: null } });
+
+    // Pour extraire tous les labels de plateforme
+    const films = await Film.find({ "platform.label": { $exists: true } }, "platform.label");
+    const platformLabels = [...new Set(
+      films.flatMap(film => film.platform.map(p => p.label).filter(Boolean))
+    )];
+
+    res.json({
+      directors: directors.sort(),
+      origins: origins.sort(),
+      platforms: platformLabels.sort(),
+    });
+  } catch (error) {
+    console.error("Erreur récupération filtres :", error);
+    res.status(500).json({ error: "Erreur lors du chargement des filtres" });
+  }
+});
+
 
 // @route   POST /api/films
 // @desc    Ajouter un nouveau film
