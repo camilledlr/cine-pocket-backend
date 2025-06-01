@@ -222,10 +222,10 @@ router.put('/:filmId/add-reco', async (req, res) => {
   }
 });
 
-router.put('/:id/update-crew', async (req, res) => {
+router.put('/:id/update-infos', async (req, res) => {
   console.log("req body", req.body);
   const { id } = req.params;
-  const { director, actors } = req.body;
+  const { director, actors, origin } = req.body;
 
   if (!director && !actors) {
     return res.status(400).json({ error: "Il faut fournir un réalisateur, des acteurs, ou les deux." });
@@ -234,6 +234,12 @@ router.put('/:id/update-crew', async (req, res) => {
   try {
     const updatedFields = {};
 
+    if (director !== undefined) {
+      updatedFields.director = director;
+    }
+    if (origin !== undefined) {
+      updatedFields.origin = origin;
+    }
     if (director !== undefined) {
       updatedFields.director = director;
     }
