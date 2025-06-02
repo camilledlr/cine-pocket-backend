@@ -21,6 +21,7 @@ router.get('/filters-data', async (req, res) => {
   try {
     const directors = await Film.distinct("director", { director: { $ne: null } });
     const origins = await Film.distinct("origin", { origin: { $ne: null } });
+    const tags = await Film.distinct("tags", { tags: { $ne: null } });
 
     // Pour extraire tous les labels de plateforme
     const films = await Film.find({ "platform.label": { $exists: true } }, "platform.label");
@@ -32,6 +33,7 @@ router.get('/filters-data', async (req, res) => {
       directors: directors.sort(),
       origins: origins.sort(),
       platforms: platformLabels.sort(),
+      tags: tags.sort(),
     });
   } catch (error) {
     console.error("Erreur récupération filtres :", error);
