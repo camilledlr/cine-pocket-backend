@@ -6,13 +6,35 @@ const slugify = require('slugify');
 
 // GET /api/films/all-titles
 router.get('/all-titles', async (req, res) => {
-  console.log("req body", req.body);
   try {
     const films = await Film.find({}, { _id: 1, title: 1, slug: 1, status :1 }).lean();
     res.json(films);
   } catch (err) {
     console.error('❌ Erreur récupération des titres :', err);
     res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// GET /api/films/to-review
+router.get('/to-review', async (req, res) => {
+  try {
+    const filmsToReview = await Film.find(
+      { 
+        status: "watched", 
+        $or: [
+          { longReview: { $exists: false } },
+          { longReview: "" },
+          { rating: { $exists: false } },
+          { rating: null }
+        ]
+      },
+      { _id: 1, title: 1, slug: 1, status: 1, rating: 1, longReview: 1 }
+    ).lean();
+
+    res.status(200).json(filmsToReview);
+  } catch (error) {
+    console.error("❌ Erreur récupération films à review :", error.message);
+    res.status(500).json({ error: "Erreur serveur." });
   }
 });
 
