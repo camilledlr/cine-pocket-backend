@@ -449,5 +449,39 @@ router.put('/:id/update-review', async (req, res) => {
 
 
 
+// GET /api/films/watched
+router.get('/watched', async (req, res) => {
+  try {
+    const watchedFilms = await Film.find({ status: 'watched' }, { title: 1, slug: 1, watchedDates: 1 }).lean();
+    res.json(watchedFilms);
+  } catch (err) {
+    console.error('❌ Erreur récupération films vus :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// GET /api/films/watched-count/:year
+router.get('/watched-count/:year', async (req, res) => {
+  const { year } = req.params;
+  const startOfYear = new Date(`${year}-01-01`);
+  const endOfYear = new Date(`${year}-12-31T23:59:59`);
+
+  try {
+    const count = await Film.countDocuments({
+      status: 'watched',
+      watchedDates: {
+        $elemMatch: {
+          $gte: startOfYear,
+          $lte: endOfYear
+        }
+      }
+    });
+    res.json({ year: parseInt(year), count });
+  } catch (err) {
+    console.error('❌ Erreur comptage films vus :', err);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 module.exports = router;
 
