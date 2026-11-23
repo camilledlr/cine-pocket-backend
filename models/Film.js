@@ -8,7 +8,7 @@ const filmSchema = new mongoose.Schema({
   slug: { type: String, unique: true },
   status: {
     type: String,
-    enum: ['to watch', 'watched', 'to_rewatch'],
+    enum: ['to watch', 'watched', 'to_rewatch', 'to_define' ],
     default: 'to watch',
   },
   shortReview: {
@@ -52,6 +52,9 @@ const filmSchema = new mongoose.Schema({
 },
   tags: {
     type: [String],
+  },
+  posterPath: {
+    type: String,
   },
 }, { timestamps: true });
 

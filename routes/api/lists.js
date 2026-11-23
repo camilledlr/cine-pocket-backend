@@ -128,4 +128,56 @@ router.put('/add-to-watchlist', async (req, res) => {
   }
   });
 
+// @route   DELETE /api/lists/:listType/films/:slug
+// @desc    Supprimer un film d'une liste (ex : DELETE /api/lists/watchlist/films/inception)
+// @access  Public
+const LIST_TYPES = {
+  watchlist: 'Watchlist',
+  seenlist: 'SeenList',
+  likedlist: 'LikedList',
+};
+
+router.delete('/:listType/films/:slug', async (req, res) => {
+  const listType = LIST_TYPES[req.params.listType.toLowerCase()];
+  const { slug } = req.params;
+
+  if (!listType) {
+    return res.status(400).json({ error: 'Type de liste invalide' });
+  }
+
+  try {
+    const list = await List.findOne({ listType });
+    if (!list) {
+      return res.status(404).json({ error: 'Liste non trouvée' });
+    }
+
+    const film = await Film.findOne({ slug });
+    if (!film || !list.films.some((id) => id.equals(film._id))) {
+      return res.status(404).json({ error: "Le film n'est pas dans cette liste." });
+    }
+
+    list.films.pull(film._id);
+    await list.save();
+
+    // Mise à jour du statut du film selon la liste quittée
+    // (miroir de add-to-watchlist et mark-as-watched dans films.js)
+    if (listType === 'Watchlist') {
+      // to_rewatch : déjà vu, on ne veut plus le revoir -> redevient "vu"
+      // to watch : jamais vu et retiré de la watchlist -> statut à définir
+      film.status = film.status === 'to_rewatch' ? 'watched' : 'to_define';
+    } else if (listType === 'SeenList') {
+      // Le film n'est plus considéré comme vu -> statut à définir
+      film.status = 'to_define';
+    }
+    if (film.isModified('status')) {
+      await film.save();
+    }
+
+    res.status(200).json({ message: 'Film supprimé de la liste', listType, slug, film });
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression du film :', error.message);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 module.exports = router;

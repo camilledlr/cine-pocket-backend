@@ -142,6 +142,9 @@ router.put('/add-to-watchlist', async (req, res) => {
     if (film.status === 'watched') {
       film.status = 'to_rewatch';
       await film.save();
+    } else if (film.status === 'to_define') {
+      film.status = 'to watch';
+      await film.save();
     }
 
     // 3. Ajout à la watchlist
@@ -483,5 +486,36 @@ router.get('/watched-count/:year', async (req, res) => {
   }
 });
 
-module.exports = router;
+// @route   DELETE /api/films/slug/:slug
+// @desc    Supprimer définitivement un film : le retire de toutes les listes puis de la base
+// @access  Public
+router.delete('/slug/:slug', async (req, res) => {
+  const { slug } = req.params;
 
+  try {
+    const film = await Film.findOne({ slug });
+    if (!film) {
+      return res.status(404).json({ error: 'Film non trouvé' });
+    }
+
+    // 1. Retirer le film de toutes les listes qui le contiennent
+    const { modifiedCount } = await List.updateMany(
+      { films: film._id },
+      { $pull: { films: film._id } }
+    );
+
+    // 2. Supprimer le film de la base
+    await Film.deleteOne({ _id: film._id });
+
+    res.status(200).json({
+      message: 'Film supprimé',
+      slug,
+      listsUpdated: modifiedCount,
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression du film :', error.message);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+module.exports = router;
