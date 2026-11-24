@@ -25,6 +25,11 @@ const filmSchema = new mongoose.Schema({
     min: 1,
     max: 10,
   },
+  tearsLevel: {
+    type: Number,
+    min: 1,
+    max: 5,
+  },
   recommendations: {
     type: [String],
   },

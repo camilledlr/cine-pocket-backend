@@ -501,6 +501,45 @@ router.put('/:id/update-title', async (req, res) => {
   }
 });
 
+// @route   PUT /api/films/:id/update-tears-level
+// @desc    Définir le tearsLevel d'un film (entier de 1 à 5, ou null pour le retirer)
+// @access  Public
+router.put('/:id/update-tears-level', async (req, res) => {
+  const { id } = req.params;
+  const { tearsLevel } = req.body;
+
+  if (tearsLevel === undefined) {
+    return res.status(400).json({ error: 'Le champ tearsLevel est requis.' });
+  }
+
+  let update;
+  if (tearsLevel === null) {
+    update = { $unset: { tearsLevel: 1 } };
+  } else {
+    const level = Number(tearsLevel);
+    if (!Number.isInteger(level) || level < 1 || level > 5) {
+      return res.status(400).json({ error: 'Le tearsLevel doit être un entier entre 1 et 5.' });
+    }
+    update = { $set: { tearsLevel: level } };
+  }
+
+  try {
+    const updatedFilm = await Film.findByIdAndUpdate(id, update, { new: true });
+
+    if (!updatedFilm) {
+      return res.status(404).json({ error: 'Film introuvable.' });
+    }
+
+    res.status(200).json({
+      message: 'Niveau de larmes mis à jour.',
+      film: updatedFilm,
+    });
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour du tearsLevel :', error.message);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
 
 
 // GET /api/films/watched
