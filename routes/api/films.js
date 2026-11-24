@@ -450,6 +450,57 @@ router.put('/:id/update-review', async (req, res) => {
   }
 });
 
+// @route   PUT /api/films/:id/update-title
+// @desc    Modifier le titre d'un film et régénérer son slug
+// @access  Public
+router.put('/:id/update-title', async (req, res) => {
+  const { id } = req.params;
+  const { newTitle } = req.body;
+  const title = typeof newTitle === 'string' ? newTitle.trim() : '';
+
+  if (!title) {
+    return res.status(400).json({ error: 'Le nouveau titre est requis.' });
+  }
+
+  const slug = slugify(title, { lower: true, strict: true });
+  if (!slug) {
+    return res.status(400).json({ error: 'Le titre ne permet pas de générer un slug valide.' });
+  }
+
+  try {
+    const film = await Film.findById(id);
+    if (!film) {
+      return res.status(404).json({ error: 'Film introuvable.' });
+    }
+
+    // Vérifier qu'aucun autre film n'utilise déjà ce slug
+    const existing = await Film.findOne({ slug, _id: { $ne: film._id } }, { _id: 1, title: 1, slug: 1 });
+    if (existing) {
+      return res.status(409).json({
+        error: 'Un autre film utilise déjà ce titre/slug.',
+        film: existing,
+      });
+    }
+
+    const oldSlug = film.slug;
+    film.title = title;
+    film.slug = slug;
+    await film.save();
+
+    res.status(200).json({
+      message: 'Titre et slug mis à jour.',
+      oldSlug,
+      film,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ error: 'Un autre film utilise déjà ce slug.' });
+    }
+    console.error('❌ Erreur lors de la mise à jour du titre :', error.message);
+    res.status(500).json({ error: 'Erreur serveur.' });
+  }
+});
+
 
 
 // GET /api/films/watched
