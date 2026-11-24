@@ -471,7 +471,6 @@ router.get('/watched-count/:year', async (req, res) => {
 
   try {
     const count = await Film.countDocuments({
-      status: 'watched',
       watchedDates: {
         $elemMatch: {
           $gte: startOfYear,
