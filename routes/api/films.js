@@ -28,7 +28,7 @@ router.get('/to-review', async (req, res) => {
           { rating: null }
         ]
       },
-      { _id: 1, title: 1, slug: 1, status: 1, rating: 1, longReview: 1 }
+      { _id: 1, title: 1, slug: 1, status: 1, rating: 1, longReview: 1, watchedDates: 1 }
     ).lean();
 
     res.status(200).json(filmsToReview);
@@ -44,6 +44,7 @@ router.get('/filters-data', async (req, res) => {
     const directors = await Film.distinct("director", { director: { $ne: null } });
     const origins = await Film.distinct("origin", { origin: { $ne: null } });
     const tags = await Film.distinct("tags", { tags: { $ne: null } });
+    const actors = await Film.distinct("actors", { actors: { $ne: null } });
 
     // Pour extraire tous les labels de plateforme
     const films = await Film.find({ "platform.label": { $exists: true } }, "platform.label");
@@ -56,6 +57,7 @@ router.get('/filters-data', async (req, res) => {
       origins: origins.sort(),
       platforms: platformLabels.sort(),
       tags: tags.sort(),
+      actors: actors.filter(Boolean).sort(),
     });
   } catch (error) {
     console.error("Erreur récupération filtres :", error);
@@ -252,10 +254,10 @@ router.put('/:filmId/add-reco', async (req, res) => {
 router.put('/:id/update-infos', async (req, res) => {
   console.log("req body", req.body);
   const { id } = req.params;
-  const { director, actors, origin } = req.body;
+  const { director, actors, origin, tags } = req.body;
 
-  if (!director && !actors) {
-    return res.status(400).json({ error: "Il faut fournir un réalisateur, des acteurs, ou les deux." });
+  if (director === undefined && actors === undefined && origin === undefined && tags === undefined) {
+    return res.status(400).json({ error: "Il faut fournir au moins une info (réalisateur, acteurs, origine ou tags)." });
   }
 
   try {
@@ -278,6 +280,22 @@ router.put('/:id/update-infos', async (req, res) => {
       updatedFields.actors = actors;
     }
 
+    // Tags personnalisés : chaînes nettoyées, sans doublon (insensible à la casse)
+    if (tags !== undefined) {
+      if (!Array.isArray(tags) || tags.some((t) => typeof t !== 'string')) {
+        return res.status(400).json({ error: "Le champ 'tags' doit être un tableau de textes." });
+      }
+      const seen = new Set();
+      updatedFields.tags = tags
+        .map((t) => t.trim().slice(0, 40))
+        .filter((t) => {
+          const key = t.toLowerCase();
+          if (!t || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+    }
+
     const updatedFilm = await Film.findByIdAndUpdate(
       id,
       { $set: updatedFields },
@@ -289,7 +307,7 @@ router.put('/:id/update-infos', async (req, res) => {
     }
 
     res.status(200).json({
-      message: "Infos réalisateur et/ou acteurs mises à jour.",
+      message: "Infos du film mises à jour.",
       film: updatedFilm,
     });
   
