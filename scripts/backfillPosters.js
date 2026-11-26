@@ -4,26 +4,14 @@ const Film = require('../models/Film');
 
 dotenv.config();
 
+const { fetchPosterPath } = require('../utils/tmdb');
+
 const TMDB_API_KEY = process.env.TMDB_API_KEY;
-const TMDB_SEARCH_URL = 'https://api.themoviedb.org/3/search/movie';
 const DELAY_MS = 250;
 const DRY_RUN = process.argv.includes('--dry-run');
 const FORCE = process.argv.includes('--force');
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const fetchPosterPath = async (title) => {
-  const url = `${TMDB_SEARCH_URL}?query=${encodeURIComponent(title)}&language=fr-FR&api_key=${TMDB_API_KEY}`;
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new Error(`TMDB ${response.status} : ${response.statusText}`);
-  }
-
-  const data = await response.json();
-  const firstResult = data.results?.[0];
-  return firstResult?.poster_path ?? null;
-};
 
 async function backfillPosters() {
   if (!TMDB_API_KEY) {

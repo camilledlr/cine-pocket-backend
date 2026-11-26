@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { fetchPosterPath } = require('../utils/tmdb');
 
 const filmSchema = new mongoose.Schema({
   title: {
@@ -62,5 +63,22 @@ const filmSchema = new mongoose.Schema({
     type: String,
   },
 }, { timestamps: true });
+
+// Affiche automatique : à la création d'un film (sans affiche fournie) et quand son
+// titre change, on cherche l'affiche sur TMDB avant d'enregistrer.
+// Un échec (TMDB lent ou indisponible, clé absente) n'empêche jamais l'enregistrement.
+filmSchema.pre('save', async function () {
+  const isCreation = this.isNew && !this.posterPath;
+  const titleChanged = !this.isNew && this.isModified('title');
+  if (!isCreation && !titleChanged) return;
+
+  try {
+    const posterPath = await fetchPosterPath(this.title);
+    // Renommage sans résultat : on garde l'ancienne affiche (souvent une simple correction)
+    if (posterPath) this.posterPath = posterPath;
+  } catch (error) {
+    console.error(`⚠️ Affiche TMDB introuvable pour "${this.title}" :`, error.message);
+  }
+});
 
 module.exports = mongoose.model('Film', filmSchema);
