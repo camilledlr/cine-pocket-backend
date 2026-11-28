@@ -6,7 +6,8 @@
     "start": "node ./bin/www",
     "dev": "nodemon ./bin/www",
     "import:filmstowatch": "node scripts/importFilmsWatchlist.js",
-    "backfill:posters": "node scripts/backfillPosters.js"
+    "backfill:posters": "node scripts/backfillPosters.js",
+    "seed:dev": "node scripts/seedDevData.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
