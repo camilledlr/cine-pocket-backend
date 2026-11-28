@@ -37,6 +37,12 @@ const filmSchema = new mongoose.Schema({
   origin: {
     type: String,
   },
+  // Année de sortie du film (ex. 2019)
+  releaseYear: {
+    type: Number,
+    min: 1888,
+    max: 2100,
+  },
   platform: [
   {
     id: String,

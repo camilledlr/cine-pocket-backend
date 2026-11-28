@@ -157,6 +157,7 @@ function buildFilm(details) {
     actors: (details.credits?.cast || []).slice(0, rand(2, 4)).map((a) => a.name),
     origin: country ? COUNTRY_NAMES[country.iso_3166_1] || country.name : undefined,
     tags,
+    releaseYear: Number(details.release_date?.slice(0, 4)) || undefined,
     posterPath: details.poster_path || undefined,
     recommendations: (details.recommendations?.results || []).slice(0, rand(0, 3)).map((m) => m.title),
     platform: chance(0.8) ? pickMany(PLATFORMS, rand(1, 2)) : [],

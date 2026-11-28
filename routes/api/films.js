@@ -254,10 +254,10 @@ router.put('/:filmId/add-reco', async (req, res) => {
 router.put('/:id/update-infos', async (req, res) => {
   console.log("req body", req.body);
   const { id } = req.params;
-  const { director, actors, origin, tags } = req.body;
+  const { director, actors, origin, tags, releaseYear } = req.body;
 
-  if (director === undefined && actors === undefined && origin === undefined && tags === undefined) {
-    return res.status(400).json({ error: "Il faut fournir au moins une info (réalisateur, acteurs, origine ou tags)." });
+  if (director === undefined && actors === undefined && origin === undefined && tags === undefined && releaseYear === undefined) {
+    return res.status(400).json({ error: "Il faut fournir au moins une info (réalisateur, acteurs, origine, tags ou année de sortie)." });
   }
 
   try {
@@ -296,9 +296,24 @@ router.put('/:id/update-infos', async (req, res) => {
         });
     }
 
+    // Année de sortie : entier entre 1888 et 2100, ou null pour la retirer
+    const unsetFields = {};
+    if (releaseYear === null) {
+      unsetFields.releaseYear = 1;
+    } else if (releaseYear !== undefined) {
+      const year = Number(releaseYear);
+      if (!Number.isInteger(year) || year < 1888 || year > 2100) {
+        return res.status(400).json({ error: "L'année de sortie doit être un entier entre 1888 et 2100." });
+      }
+      updatedFields.releaseYear = year;
+    }
+
+    const update = { $set: updatedFields };
+    if (Object.keys(unsetFields).length) update.$unset = unsetFields;
+
     const updatedFilm = await Film.findByIdAndUpdate(
       id,
-      { $set: updatedFields },
+      update,
       { new: true }
     );
 
