@@ -17,6 +17,11 @@ const listSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // true : liste personnalisée dont l'ordre des films est un classement (« Mes Tops »)
+  ranked: {
+    type: Boolean,
+    default: false,
+  },
   films: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Film',

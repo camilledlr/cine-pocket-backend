@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const router = express.Router();
 const List = require('../../models/List');
 const Film = require('../../models/Film');
@@ -51,6 +52,22 @@ router.get('/seenlist', async (req, res) => {
     if (!list) return res.status(404).json({ error: 'Liste non trouvée' });
     res.json(list);
   } catch (error) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// @route   GET /api/lists/rankings
+// @desc    Classements enregistrés (listes Customised avec ranked: true), les plus récemment modifiés en premier.
+//          Défini avant /:id, sinon « rankings » serait pris pour un id.
+// @access  Public
+router.get('/rankings', async (req, res) => {
+  try {
+    const rankings = await List.find({ listType: 'Customised', ranked: true })
+      .sort({ updatedAt: -1 })
+      .populate('films', 'title slug rating posterPath');
+    res.json(rankings);
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des classements :', error.message);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
@@ -176,6 +193,63 @@ router.delete('/:listType/films/:slug', async (req, res) => {
     res.status(200).json({ message: 'Film supprimé de la liste', listType, slug, film });
   } catch (error) {
     console.error('❌ Erreur lors de la suppression du film :', error.message);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// @route   PUT /api/lists/:id
+// @desc    Mettre à jour un classement (liste Customised avec ranked: true) : titre et/ou ordre des films
+// @access  Public
+router.put('/:id', async (req, res) => {
+  const { title, films } = req.body;
+
+  if (title !== undefined && (typeof title !== 'string' || !title.trim())) {
+    return res.status(400).json({ error: 'Titre invalide' });
+  }
+  if (films !== undefined && (!Array.isArray(films) || films.some((id) => !mongoose.isValidObjectId(id)))) {
+    return res.status(400).json({ error: 'Liste de films invalide' });
+  }
+
+  try {
+    const list = await List.findById(req.params.id);
+    if (!list) return res.status(404).json({ error: 'Liste non trouvée' });
+    // Seuls les classements se modifient par cette route (pas la Watchlist ni les Films vus)
+    if (list.listType !== 'Customised' || !list.ranked) {
+      return res.status(403).json({ error: 'Seuls les classements sont modifiables ici' });
+    }
+
+    if (title !== undefined) list.title = title.trim().slice(0, 80);
+    if (films !== undefined) list.films = films;
+    await list.save();
+
+    res.status(200).json(list);
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour de la liste :', error.message);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+// @route   DELETE /api/lists/:id
+// @desc    Supprimer un classement (liste Customised avec ranked: true).
+//          Les films eux-mêmes ne sont pas supprimés : seule la liste disparaît.
+// @access  Public
+router.delete('/:id', async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ error: 'Identifiant invalide' });
+  }
+
+  try {
+    const list = await List.findById(req.params.id);
+    if (!list) return res.status(404).json({ error: 'Liste non trouvée' });
+    // Garde : on ne supprime jamais la Watchlist ou les Films vus par cette route
+    if (list.listType !== 'Customised' || !list.ranked) {
+      return res.status(403).json({ error: 'Seuls les classements peuvent être supprimés ici' });
+    }
+
+    await list.deleteOne();
+    res.status(200).json({ message: 'Classement supprimé', id: req.params.id });
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression du classement :', error.message);
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
